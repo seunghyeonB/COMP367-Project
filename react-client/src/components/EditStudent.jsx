@@ -9,7 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 function EditStudent(props) {
   // Get the userId param from the URL.
   let { id } = useParams();
- 
+  console.log(id)
   let navigate = useNavigate();
   const [student, setStudent] = useState({_id: '', firstName: '', lastName:'', studentNumber:'',
                                           password:'',address:'', city:'',phoneNumber:'',
