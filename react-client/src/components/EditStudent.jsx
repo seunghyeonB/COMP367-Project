@@ -87,7 +87,14 @@ function EditStudent(props) {
                 <Form.Label>Phone Number</Form.Label>
                 <Form.Control type="text" name="phoneNumber" id="phoneNumber" placeholder="Enter phone number" value={student.phoneNumber} onChange={onChange} />
               </Form.Group>
-             
+              <Form.Group>
+                <Form.Label>Program</Form.Label>
+                <Form.Control type="text" name="program" id="program" placeholder="Enter program" value={student.program} onChange={onChange} />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Tech Skills</Form.Label>
+                <Form.Control type="textarea" row="2" name="techSkills" id="techSkills" placeholder="Enter tech skills" value={student.techSkills} onChange={onChange} />
+              </Form.Group>
              
               <Form.Group>
                 <Form.Label>Favourite Topics</Form.Label>
