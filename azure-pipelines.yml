@@ -1,0 +1,135 @@
+trigger:
+- main
+
+pool: 
+  name: self hosted agp1
+
+stages:
+- stage: SonarQube
+  displayName: 'SonarQube Stage'
+  jobs:
+  - job: SonarQubeJob
+    displayName: 'Run SonarQube Analysis'
+    pool:
+      name: 'self hosted agp1'
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: SonarQubePrepare@5
+      inputs:
+        SonarQube: 'COMP367-project'
+        scannerMode: 'CLI'
+        configMode: 'manual'
+        cliProjectKey: 'COMP367-Finalproject_COMP367-Finalproject_AY7tsoifz3ez0tVfDviY'
+        cliProjectName: 'COMP367-project'
+        cliSources: '.'
+
+- stage: Build
+  displayName: 'Build Stage'
+  jobs:
+  - job: BuildJob
+    displayName: 'Build and Test'
+    pool:
+      name: 'self hosted agp1'
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: NodeTool@0
+      displayName: 'Install Node.js'
+      inputs:
+        versionSpec: '10.x'
+     # build steps
+    - script: |
+        npm install vite
+        npm run build
+        npm update
+      displayName: 'npm install and build'
+      workingDirectory: 'react-client'
+    # test steps
+    - script: |
+        npm install vite
+        npm run build
+        npm test
+      displayName: 'npm test'
+      workingDirectory: 'react-client'
+
+
+# CD Stage (Deliver Stage)
+- stage: Deliver
+  displayName: 'Deliver part'
+  dependsOn: Build
+  jobs:
+  - job: DeployJob
+    displayName: 'Deploy Artifact'
+    pool:
+      name: 'self hosted agp1'
+      vmImage: 'ubuntu-latest'
+    steps: 
+    - script: |
+        npm install vite
+        # Build and deploy the project
+        npm run build
+        
+        echo 'Deploying the application...'
+      displayName: 'Build and Deploy'
+      workingDirectory: 'react-client'
+
+# Deployment to Environments
+- stage: DeployDev
+  displayName: 'Deploy to Dev Env'
+  dependsOn: Deliver
+  jobs:
+  - job: DeployDevJob
+    displayName: 'Deploy to Development Environment'
+    pool:
+      name: 'self hosted agp1'
+      vmImage: 'ubuntu-latest'
+    steps:
+    - script: |
+        
+        echo 'Deploying to Development Environment'
+      displayName: 'Deploy to Development Environment'
+  
+- stage: DeployQAT
+  displayName: 'Deploy to QAT Env'
+  dependsOn: DeployDev
+  jobs:
+  - job: DeployQATJob
+    displayName: 'Deploy to QAT Environment'
+    pool:
+      name: 'self hosted agp1'
+      vmImage: 'ubuntu-latest'
+    steps:
+    - script: |
+        
+        echo 'Deploying to QAT Environment'
+      displayName: 'Deploy to QAT Environment'
+  
+- stage: DeployStaging
+  displayName: 'Deploy to Staging Env'
+  dependsOn: DeployQAT
+  jobs:
+  - job: DeployStagingJob
+    displayName: 'Deploy to Staging Environment'
+    pool:
+      name: 'self hosted agp1'
+      vmImage: 'ubuntu-latest'
+    steps:
+    - script: |
+        
+        echo 'Deploying to Staging Environment'
+      displayName: 'Deploy to Staging Environment'
+  
+- stage: DeployProd
+  displayName: 'Deploy to Production Env'
+  dependsOn: DeployStaging
+  jobs:
+  - job: DeployProdJob
+    displayName: 'Deploy to Production Environment'
+    pool:
+      name: 'self hosted agp1'
+      vmImage: 'ubuntu-latest'
+    steps:
+    - script: |
+       
+        echo 'Deploying to Production Environment'
+      displayName: 'Deploy to Production Environment'
+
